@@ -82,7 +82,6 @@ public class PeerExplorerTest {
         Assert.assertTrue(CollectionUtils.isEmpty(nodesWithMessage));
     }
 
-
     @Test
     public void sendInitialMessageToNodes() {
         List<String> nodes = new ArrayList<>();

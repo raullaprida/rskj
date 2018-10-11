@@ -526,6 +526,8 @@ public class TransactionExecutor {
         }
 
         logger.trace("tx finalization done");
+
+        result.setProgramResult(true);
     }
 
     public TransactionExecutor setLocalCall(boolean localCall) {

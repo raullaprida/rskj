@@ -30,7 +30,6 @@ import org.ethereum.util.RskTestFactory;
 import org.ethereum.vm.program.ProgramResult;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.math.BigInteger;
 
 public class ReversibleTransactionExecutorTest {

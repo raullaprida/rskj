@@ -1,6 +1,6 @@
 /*
  * This file is part of RskJ
- * Copyright (C) 2017 RSK Labs Ltd.
+ * Copyright (C) 2018 RSK Labs Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,6 +30,12 @@ public class EthModuleTransactionDisabled implements EthModuleTransaction {
     @Override
     public String sendTransaction(Web3.CallArguments args) {
         LOGGER.debug("eth_sendTransaction({}): {}", args, null);
+        throw new JsonRpcInvalidParamException("Local wallet is disabled in this node");
+    }
+
+    @Override
+    public String sendRawTransaction(String rawData) {
+        LOGGER.debug("eth_sendRawTransaction({}): {}", rawData, null);
         throw new JsonRpcInvalidParamException("Local wallet is disabled in this node");
     }
 }

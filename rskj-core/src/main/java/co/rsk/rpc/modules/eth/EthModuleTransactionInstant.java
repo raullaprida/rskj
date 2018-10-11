@@ -19,18 +19,19 @@
 package co.rsk.rpc.modules.eth;
 
 import co.rsk.config.RskSystemProperties;
+import co.rsk.core.ReversibleTransactionExecutor;
 import co.rsk.core.RskAddress;
 import co.rsk.core.Wallet;
+import co.rsk.mine.MinerClient;
+import co.rsk.mine.MinerServer;
 import org.bouncycastle.util.encoders.Hex;
-import org.ethereum.core.Account;
-import org.ethereum.core.ImmutableTransaction;
-import org.ethereum.core.Transaction;
-import org.ethereum.core.TransactionPool;
+import org.ethereum.core.*;
 import org.ethereum.facade.Ethereum;
 import org.ethereum.rpc.TypeConverter;
 import org.ethereum.rpc.Web3;
 import org.ethereum.rpc.exception.JsonRpcInvalidParamException;
 import org.ethereum.vm.GasCost;
+import org.ethereum.vm.program.ProgramResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ import java.math.BigInteger;
 
 import static org.ethereum.rpc.TypeConverter.stringHexToByteArray;
 
-public class EthModuleTransactionEnabled implements EthModuleTransaction {
+public class EthModuleTransactionInstant implements EthModuleTransaction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("web3");
 
@@ -46,12 +47,21 @@ public class EthModuleTransactionEnabled implements EthModuleTransaction {
     private final Ethereum eth;
     private final Wallet wallet;
     private final TransactionPool transactionPool;
+    private final MinerServer minerServer;
+    private final MinerClient minerClient;
+    private final Blockchain blockchain;
+    private final ReversibleTransactionExecutor reversibleTransactionExecutor;
 
-    public EthModuleTransactionEnabled(RskSystemProperties config, Ethereum eth, Wallet wallet, TransactionPool transactionPool) {
+    public EthModuleTransactionInstant(RskSystemProperties config, Ethereum eth, Wallet wallet, TransactionPool transactionPool, MinerServer minerServer, MinerClient minerClient, Blockchain blockchain, ReversibleTransactionExecutor reversibleTransactionExecutor) {
         this.config = config;
         this.eth = eth;
         this.wallet = wallet;
         this.transactionPool = transactionPool;
+        this.minerServer = minerServer;
+        this.minerClient = minerClient;
+        this.blockchain = blockchain;
+        this.reversibleTransactionExecutor = reversibleTransactionExecutor;
+        this.reversibleTransactionExecutor.setLocalCall(false);
     }
 
     @Override
@@ -69,16 +79,19 @@ public class EthModuleTransactionEnabled implements EthModuleTransaction {
                 args.data = args.data.substring(2);
             }
 
+            Transaction tx;
+
             synchronized (transactionPool) {
                 BigInteger accountNonce = args.nonce != null ? TypeConverter.stringNumberAsBigInt(args.nonce) : transactionPool.getPendingState().getNonce(account.getAddress());
-                Transaction tx = Transaction.create(config, toAddress, value, accountNonce, gasPrice, gasLimit, args.data);
+                tx = Transaction.create(config, toAddress, value, accountNonce, gasPrice, gasLimit, args.data);
                 tx.sign(account.getEcKey().getPrivKeyBytes());
                 eth.submitTransaction(tx.toImmutableTransaction());
                 s = tx.getHash().toJsonString();
             }
 
-            return s;
+            mineTransactionIsItValid(tx);
 
+            return s;
         } finally {
             LOGGER.debug("eth_sendTransaction({}): {}", args, s);
         }
@@ -98,6 +111,8 @@ public class EthModuleTransactionEnabled implements EthModuleTransaction {
 
             eth.submitTransaction(tx);
 
+            mineTransactionIsItValid(tx);
+
             return s = tx.getHash().toJsonString();
         } finally {
             if (LOGGER.isDebugEnabled()) {
@@ -105,4 +120,26 @@ public class EthModuleTransactionEnabled implements EthModuleTransaction {
             }
         }
     }
+
+    private void mineTransactionIsItValid(Transaction tx) {
+
+        ProgramResult txResult = reversibleTransactionExecutor.executeTransaction(
+                blockchain.getBestBlock(),
+                blockchain.getBestBlock().getCoinbase(),
+                tx.getGasPrice().getBytes(),
+                tx.getGasLimit(),
+                tx.getReceiveAddress().getBytes(),
+                tx.getValue().getBytes(),
+                tx.getData(),
+                tx.getSender()
+        );
+
+        if (txResult.programSuccess()) {
+            minerServer.buildBlockToMine(blockchain.getBestBlock(), false);
+            minerClient.mineBlock();
+        } else {
+            //TODO: What should we do if was not success
+        }
+    }
+
 }

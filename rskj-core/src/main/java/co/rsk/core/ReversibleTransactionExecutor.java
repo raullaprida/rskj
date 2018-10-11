@@ -45,6 +45,7 @@ public class ReversibleTransactionExecutor {
     private final BlockStore blockStore;
     private final ReceiptStore receiptStore;
     private final ProgramInvokeFactory programInvokeFactory;
+    private boolean localCall = true;
 
     @Autowired
     public ReversibleTransactionExecutor(
@@ -69,9 +70,11 @@ public class ReversibleTransactionExecutor {
             byte[] value,
             byte[] data,
             RskAddress fromAddress) {
+
         Repository repository = track.getSnapshotTo(executionBlock.getStateRoot()).startTracking();
 
         byte[] nonce = repository.getNonce(fromAddress).toByteArray();
+
         UnsignedTransaction tx = new UnsignedTransaction(
                 nonce,
                 gasPrice,
@@ -87,13 +90,17 @@ public class ReversibleTransactionExecutor {
                 programInvokeFactory, executionBlock, new EthereumListenerAdapter(), 0, config.getVmConfig(),
                 config.getBlockchainConfig(), config.playVM(), config.isRemascEnabled(), config.vmTrace(), new PrecompiledContracts(config),
                 config.databaseDir(), config.vmTraceDir(), config.vmTraceCompressed()
-        ).setLocalCall(true);
+        ).setLocalCall(this.localCall);
 
         executor.init();
         executor.execute();
         executor.go();
         executor.finalization();
         return executor.getResult();
+    }
+
+    public void setLocalCall(boolean localCallValue) {
+        this.localCall = localCallValue;
     }
 
     private static class UnsignedTransaction extends Transaction {

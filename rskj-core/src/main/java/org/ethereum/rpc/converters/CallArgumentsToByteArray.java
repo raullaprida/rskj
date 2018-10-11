@@ -43,6 +43,7 @@ public class CallArgumentsToByteArray {
         return gasPrice;
     }
 
+
     public byte[] getGasLimit() {
         // maxGasLimit value is 100000000000000
         String maxGasLimit = "0x5AF3107A4000";

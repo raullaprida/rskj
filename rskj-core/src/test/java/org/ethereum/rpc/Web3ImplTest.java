@@ -296,27 +296,6 @@ public class Web3ImplTest {
     }
 
     @Test
-    public void sendRawTransaction() throws Exception {
-        Web3Impl web3 = createWeb3();
-        SimpleEthereum eth = new SimpleEthereum();
-        web3.eth = eth;
-
-        Account acc1 = new AccountBuilder().name("acc1").build();
-        Account acc2 = new AccountBuilder().name("acc2").build();
-        Transaction tx = new TransactionBuilder().sender(acc1).receiver(acc2).value(BigInteger.valueOf(1000000)).build();
-
-        String rawData = Hex.toHexString(tx.getEncoded());
-
-        String trxHash = web3.eth_sendRawTransaction(rawData);
-
-        org.junit.Assert.assertNotNull(trxHash);
-        org.junit.Assert.assertNotNull(eth.tx);
-        org.junit.Assert.assertArrayEquals(acc1.getAddress().getBytes(), eth.tx.getSender().getBytes());
-        org.junit.Assert.assertArrayEquals(acc2.getAddress().getBytes(), eth.tx.getReceiveAddress().getBytes());
-        org.junit.Assert.assertEquals(BigInteger.valueOf(1000000), eth.tx.getValue().asBigInteger());
-    }
-
-    @Test
     public void getUnknownTransactionReceipt() throws Exception {
         ReceiptStore receiptStore = new ReceiptStoreImpl(new HashMapDB());
         World world = new World(receiptStore);
@@ -1190,6 +1169,10 @@ public class Web3ImplTest {
         org.junit.Assert.assertNull(account1);
     }
 
+    private Web3Impl createWeb3() {
+        return createWeb3(Web3Mocks.getMockEthereum(), Web3Mocks.getMockBlockchain(), Web3Mocks.getMockTransactionPool(), Web3Mocks.getMockBlockStore(), null, null, null);
+    }
+
     @Test
     public void eth_sendTransaction()
     {
@@ -1233,10 +1216,6 @@ public class Web3ImplTest {
         String expectedHash = tx.getHash().toJsonString();
 
         Assert.assertTrue("Method is not creating the expected transaction", expectedHash.compareTo(txHash) == 0);
-    }
-
-    private Web3Impl createWeb3() {
-        return createWeb3(Web3Mocks.getMockEthereum(), Web3Mocks.getMockBlockchain(), Web3Mocks.getMockTransactionPool(), Web3Mocks.getMockBlockStore(), null, null, null);
     }
 
     private Web3Impl createWeb3(World world) {
