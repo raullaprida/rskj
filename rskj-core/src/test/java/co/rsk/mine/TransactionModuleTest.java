@@ -55,18 +55,13 @@ import org.ethereum.net.server.ChannelManager;
 import org.ethereum.net.server.ChannelManagerImpl;
 import org.ethereum.rpc.Simples.SimpleChannelManager;
 import org.ethereum.rpc.Simples.SimpleConfigCapabilities;
-import org.ethereum.rpc.Simples.SimpleEthereum;
 import org.ethereum.rpc.TypeConverter;
 import org.ethereum.rpc.Web3;
 import org.ethereum.rpc.Web3Impl;
 import org.ethereum.rpc.Web3Mocks;
-import org.ethereum.rpc.converters.CallArgumentsToByteArray;
 import org.ethereum.sync.SyncPool;
-import org.ethereum.util.RskTestFactory;
-import org.ethereum.vm.program.ProgramResult;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.math.BigInteger;
@@ -301,7 +296,7 @@ public class TransactionModuleTest {
         if (mineInstant) {
             transactionModule = new EthModuleTransactionInstant(config, eth, wallet, transactionPool, minerServer, minerClient, blockchain, reversibleTransactionExecutor1);
         } else {
-            transactionModule = new EthModuleTransactionEnabled(config, eth, wallet, transactionPool);
+            transactionModule = new EthModuleTransactionBase(config, eth, wallet, transactionPool);
         }
 
         EthModule ethModule = new EthModule(config, blockchain, reversibleTransactionExecutor1, new ExecutionBlockRetriever(blockchain, null, null), new EthModuleSolidityDisabled(), new EthModuleWalletEnabled(wallet), transactionModule);

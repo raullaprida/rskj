@@ -356,14 +356,14 @@ public class RskFactory {
             ReversibleTransactionExecutor reversibleTransactionExecutor) {
 
         if (wallet == null) {
-            return new EthModuleTransactionDisabled();
+            return new EthModuleTransactionDisabled(config, eth, wallet, transactionPool);
         }
 
         if (config.minerClientAutoMine()) {
             return new EthModuleTransactionInstant(config, eth, wallet, transactionPool, minerServer, minerClient, blockchain, reversibleTransactionExecutor);
         }
 
-        return new EthModuleTransactionEnabled(config, eth, wallet, transactionPool);
+        return new EthModuleTransactionBase(config, eth, wallet, transactionPool);
     }
 
     @Bean

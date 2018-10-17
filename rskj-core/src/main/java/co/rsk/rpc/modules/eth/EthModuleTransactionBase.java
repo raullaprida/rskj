@@ -38,16 +38,16 @@ import java.math.BigInteger;
 
 import static org.ethereum.rpc.TypeConverter.stringHexToByteArray;
 
-public class EthModuleTransactionEnabled implements EthModuleTransaction {
+public class EthModuleTransactionBase implements EthModuleTransaction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("web3");
+    protected static final Logger LOGGER = LoggerFactory.getLogger("web3");
 
     private final RskSystemProperties config;
     private final Ethereum eth;
     private final Wallet wallet;
     private final TransactionPool transactionPool;
 
-    public EthModuleTransactionEnabled(RskSystemProperties config, Ethereum eth, Wallet wallet, TransactionPool transactionPool) {
+    public EthModuleTransactionBase(RskSystemProperties config, Ethereum eth, Wallet wallet, TransactionPool transactionPool) {
         this.config = config;
         this.eth = eth;
         this.wallet = wallet;

@@ -18,24 +18,22 @@
 
 package co.rsk.rpc.modules.eth;
 
+import co.rsk.config.RskSystemProperties;
+import co.rsk.core.Wallet;
+import org.ethereum.core.TransactionPool;
+import org.ethereum.facade.Ethereum;
 import org.ethereum.rpc.Web3;
 import org.ethereum.rpc.exception.JsonRpcInvalidParamException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class EthModuleTransactionDisabled implements EthModuleTransaction {
+public class EthModuleTransactionDisabled extends EthModuleTransactionBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("web3");
+    public EthModuleTransactionDisabled(RskSystemProperties config, Ethereum eth, Wallet wallet, TransactionPool transactionPool) {
+        super(config, eth, wallet, transactionPool);
+    }
 
     @Override
     public String sendTransaction(Web3.CallArguments args) {
         LOGGER.debug("eth_sendTransaction({}): {}", args, null);
-        throw new JsonRpcInvalidParamException("Local wallet is disabled in this node");
-    }
-
-    @Override
-    public String sendRawTransaction(String rawData) {
-        LOGGER.debug("eth_sendRawTransaction({}): {}", rawData, null);
         throw new JsonRpcInvalidParamException("Local wallet is disabled in this node");
     }
 }
