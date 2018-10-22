@@ -26,8 +26,9 @@ public class TestNetDifficultyDropEnabledConfig extends TestNetAfterBridgeSyncCo
 
     @Override
     public BlockDifficulty calcDifficulty(BlockHeader currentBlockHeader, BlockHeader parentBlockHeader) {
+        long tenMinutesInSeconds = 600;
         // If more than 10 minutes, reset to minimum difficulty
-        if (currentBlockHeader.getTimestamp() >= parentBlockHeader.getTimestamp() + 600) {
+        if (currentBlockHeader.getTimestamp() >= parentBlockHeader.getTimestamp() + tenMinutesInSeconds) {
             return getConstants().getMinimumDifficulty();
         }
 
