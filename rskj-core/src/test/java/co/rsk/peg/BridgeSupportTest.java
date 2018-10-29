@@ -3125,9 +3125,14 @@ public class BridgeSupportTest {
         List<Sha256Hash> hashes = new ArrayList<>();
         hashes.add(btcTransactionHash2);
         hashes.add(btcTransactionHash);
-        byte[] bits = new byte[1];
-        bits[0] = 0x3f;
-        PartialMerkleTree pmt = new PartialMerkleTree(btcParams, bits, hashes, hashes.size());
+
+        //Set the leaves that are going to be added, in this case all of them
+        byte[] bits = new byte[(int) Math.ceil(hashes.size() / 8.0)];
+        for(int i=0; i < hashes.size() ; i++) {
+            Utils.setBitLE(bits, i);
+        }
+
+        PartialMerkleTree pmt = PartialMerkleTree.buildFromLeaves(btcParams, bits, hashes);
 
         List<Sha256Hash> hashlist = new ArrayList<>();
         Sha256Hash merkleRoot = pmt.getTxnHashAndMerkleRoot(hashlist);
@@ -3171,9 +3176,13 @@ public class BridgeSupportTest {
 
         List<Sha256Hash> hashes = new ArrayList<>();
         hashes.add(btcTransactionHash2);
-        byte[] bits = new byte[1];
-        bits[0] = 0x3f;
-        PartialMerkleTree pmt = new PartialMerkleTree(btcParams, bits, hashes, hashes.size());
+        //Set the leaves that are going to be added, in this case all of them
+        byte[] bits = new byte[(int) Math.ceil(hashes.size() / 8.0)];
+        for(int i=0; i < hashes.size() ; i++) {
+            Utils.setBitLE(bits, i);
+        }
+
+        PartialMerkleTree pmt = PartialMerkleTree.buildFromLeaves(btcParams, bits, hashes);
 
         List<Sha256Hash> hashlist = new ArrayList<>();
         Sha256Hash merkleRoot = pmt.getTxnHashAndMerkleRoot(hashlist);
@@ -3223,9 +3232,13 @@ public class BridgeSupportTest {
         List<Sha256Hash> hashes = new ArrayList<>();
         hashes.add(btcTransactionHash2);
         hashes.add(btcTransactionHash);
-        byte[] bits = new byte[1];
-        bits[0] = 0x3f;
-        PartialMerkleTree pmt = new PartialMerkleTree(btcParams, bits, hashes, hashes.size());
+        //Set the leaves that are going to be added, in this case all of them
+        byte[] bits = new byte[(int) Math.ceil(hashes.size() / 8.0)];
+        for(int i=0; i < hashes.size() ; i++) {
+            Utils.setBitLE(bits, i);
+        }
+
+        PartialMerkleTree pmt = PartialMerkleTree.buildFromLeaves(btcParams, bits, hashes);
 
         List<Sha256Hash> hashList = new ArrayList<>();
         hashList.add(btcTransactionHash2);
@@ -3305,9 +3318,13 @@ public class BridgeSupportTest {
 
         List<Sha256Hash> hashes = new ArrayList<>();
         hashes.add(btcTransactionHash);
-        byte[] bits = new byte[1];
-        bits[0] = 0x3f;
-        PartialMerkleTree pmt = new PartialMerkleTree(btcParams, bits, hashes, hashes.size());
+        //Set the leaves that are going to be added, in this case all of them
+        byte[] bits = new byte[(int) Math.ceil(hashes.size() / 8.0)];
+        for(int i=0; i < hashes.size() ; i++) {
+            Utils.setBitLE(bits, i);
+        }
+
+        PartialMerkleTree pmt = PartialMerkleTree.buildFromLeaves(btcParams, bits, hashes);
 
         // Fake BridgeUtils.getStoredBlockAtHeight
         PowerMockito.mockStatic(BridgeUtils.class);
@@ -3340,9 +3357,13 @@ public class BridgeSupportTest {
 
         List<Sha256Hash> hashes = new ArrayList<>();
         hashes.add(btcTransactionHash);
-        byte[] bits = new byte[1];
-        bits[0] = 0x3f;
-        PartialMerkleTree pmt = new PartialMerkleTree(btcParams, bits, hashes, hashes.size());
+        //Set the leaves that are going to be added, in this case all of them
+        byte[] bits = new byte[(int) Math.ceil(hashes.size() / 8.0)];
+        for(int i=0; i < hashes.size() ; i++) {
+            Utils.setBitLE(bits, i);
+        }
+
+        PartialMerkleTree pmt = PartialMerkleTree.buildFromLeaves(btcParams, bits, hashes);
 
         // Fake BridgeUtils.getStoredBlockAtHeight
         PowerMockito.mockStatic(BridgeUtils.class);
@@ -3379,9 +3400,13 @@ public class BridgeSupportTest {
 
         List<Sha256Hash> hashes = new ArrayList<>();
         hashes.add(btcTransactionHash);
-        byte[] bits = new byte[1];
-        bits[0] = 0x3f;
-        PartialMerkleTree pmt = new PartialMerkleTree(btcParams, bits, hashes, hashes.size());
+        //Set the leaves that are going to be added, in this case all of them
+        byte[] bits = new byte[(int) Math.ceil(hashes.size() / 8.0)];
+        for(int i=0; i < hashes.size() ; i++) {
+            Utils.setBitLE(bits, i);
+        }
+
+        PartialMerkleTree pmt = PartialMerkleTree.buildFromLeaves(btcParams, bits, hashes);
 
         // Fake BridgeUtils.getStoredBlockAtHeight
         PowerMockito.mockStatic(BridgeUtils.class);
