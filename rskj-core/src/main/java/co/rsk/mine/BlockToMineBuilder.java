@@ -69,7 +69,6 @@ public class BlockToMineBuilder {
     private final Coin minerMinGasPriceTarget;
 
     private long timeAdjustment;
-    private long minimumAcceptableTime;
 
     @Autowired
     public BlockToMineBuilder(
@@ -145,8 +144,6 @@ public class BlockToMineBuilder {
 
         final List<Transaction> txsToRemove = new ArrayList<>();
         final List<Transaction> txs = getTransactions(txsToRemove, newBlockParent, minimumGasPrice);
-        minimumAcceptableTime = newBlockParent.getTimestamp() + 1;
-
         final Block newBlock = createBlock(newBlockParent, uncles, txs, minimumGasPrice);
 
         newBlock.setExtraData(extraData);
@@ -226,7 +223,8 @@ public class BlockToMineBuilder {
 
     // Note that this needs to be refactored.
     public long getCurrentTimeInSeconds() {
-        long ret = clock.millis() / 1000 + timeAdjustment;
+        long minimumAcceptableTime = blockStore.getBestBlock().getTimestamp();
+        long ret = (clock.millis() / 1000L) + timeAdjustment;
         return Long.max(ret, minimumAcceptableTime);
     }
 
