@@ -188,7 +188,12 @@ public class BlockToMineBuilder {
             Coin minimumGasPrice) {
         final byte[] unclesListHash = HashUtil.keccak256(BlockHeader.getUnclesEncodedEx(uncles));
 
-        final long timestampSeconds = this.getCurrentTimeInSeconds();
+        long timestampSeconds = this.getCurrentTimeInSeconds();
+
+        if (timestampSeconds <= newBlockParent.getTimestamp()) {
+            logger.info("current time {} is behind parent timestamp {}", timestampSeconds, newBlockParent.getTimestamp());
+            timestampSeconds = newBlockParent.getTimestamp() + 1;
+        }
 
         // Set gas limit before executing block
         BigInteger minGasLimit = BigInteger.valueOf(miningConfig.getGasLimit().getMininimum());
@@ -224,7 +229,7 @@ public class BlockToMineBuilder {
     // Note that this needs to be refactored.
     public long getCurrentTimeInSeconds() {
         long minimumAcceptableTime = blockStore.getBestBlock().getTimestamp();
-        long ret = (clock.millis() / 1000L) + timeAdjustment;
+        long ret = clock.instant().plusSeconds(timeAdjustment).getEpochSecond();
         return Long.max(ret, minimumAcceptableTime);
     }
 
